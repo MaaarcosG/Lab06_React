@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>¡Bienvenido a la Memoria!</title>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div id="index"></div>
+        <script type="text/babel">
+        //Array de las imagener 
+        const images = [
+            'Imagenes/Arsenal.jpg',
+            'Imagenes/atletico.png',
+            'Imagenes/Barca.png',
+            'Imagenes/Bayern.png',
+            'Imagenes/Chelsea.jpg',
+            'Imagenes/man_u.jpg',
+            'Imagenes/dortmund.png',
+            'Imagenes/RM.jpg',
+            'Imagenes/uefa.png'
+        ]
+        class Game extends React.Component{
+            constructor(props){
+                super(props)
+                //variables de control
+                this.state = {
+                    memoria: ['0','1','2','3','4','5','6','7'],
+                    cartaDuplicada: [],
+                    //lista para generar las memoria de forma random
+                    memoriaRandom: [],
+                    final: [],
+                    cartaAbierta: [],
+                    ganar: false, 
+                    movimientos: 0,
+                    puntos: 0
+                }
+                this.setup()
+            }
+
+            //verificar la vuelta de la carta
+            handleClick(name, index){
+                //verifica si se mostraron 2 cartas
+                if(this.state.cartaAbierta.length == 2){
+                    //damos tiempo para que se vean las imagenes
+                    setTimeout(() => {
+                        this.check()
+                    }, 750);
+                }else{
+                    //lista de memoria
+                    let cartaMemoria = {name, index}
+                    let final = this.state.final
+                    let listaMemoria = this.state.cartaAbierta
+                    final[index].close = false
+                    listaMemoria.push(cartaMemoria)
+                    this.setState({
+                        cartaAbierta: listaMemoria,
+                        final: final
+                    })
+                }
+                if(this.state.cartaAbierta.length == 2){
+                    //damos tiempo para que se vean las imagenes cada 1000s
+                    setTimeout(() => {
+                        this.check()
+                    }, 1000);
+                }
+            }
+
+            //puntos
+            checkMovimientos(){
+                this.state.movimientos += 1
+                this.forceUpdate()
+            }
+
+            //chequeamos las cartas
+            check(){
+                let finalCartaPar = this.state.final
+                let condicion = this.state.ganar
+                //se verifica si el nombre es el mismo
+                if(this.state.cartaAbierta[0].name == this.state.cartaAbierta[1].name && this.state.cartaAbierta[0].index != this.state.cartaAbierta[1].index){
+                    finalCartaPar[this.state.cartaAbierta[0].index].complete = true
+				    finalCartaPar[this.state.cartaAbierta[1].index].complete = true
+                } else{
+                    finalCartaPar[this.state.cartaAbierta[0].index].close = true
+			        finalCartaPar[this.state.cartaAbierta[1].index].close = true
+                }
+                let contador = 0
+                finalCartaPar.forEach((card)=>{
+                    if(card.complete){
+                        contador ++
+                        //console.log(contador)
+                    }
+                })
+                //mostramos el contador
+                if(contador == 16){
+                    condicion = true
+                }
+                //actualizamos los array principales del estado
+                this.setState({
+                    final : finalCartaPar,
+				    cartaAbierta : [],
+				    ganar: condicion
+		        })
+            }
+
+            setup(){
+                //limpiamos el array
+			    let final = [];
+			    // llenamos la lista
+                this.state.cartaDuplicada = this.state.memoria.concat(this.state.memoria)
+                // mandamos a hacer el metodo de random
+			    this.state.memoriaRandom = this.randomize(this.state.cartaDuplicada)
+			    this.state.memoriaRandom.map((name,index) => {
+                    final.push({
+                        name,
+                        close: true,
+                        complete: false
+                    })
+			    })
+		        this.state.final = final
+            }
+            
+            //funcion para hacer random en las listas
+            randomize(array){
+                let currentIndex = array.length, temporaryValue, randomIndex;
+		        while (0 !== currentIndex) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+                    temporaryValue = array[currentIndex];
+                    array[currentIndex] = array[randomIndex];
+                    array[randomIndex] = temporaryValue;
+                }
+                return array
+            }
+
+            //renderizamos la aplicacion
+            render(){
+                //Conducion para ganar
+                if(this.state.ganar == true){
+                    alert('Juego completado, pulse aceptar para recargar la pagina')
+                    location.reload();
+                }
+
+                return(
+                    <div className='pg'>{
+                        this.state.final.map((brand, index) => {
+                            return <Card brand={brand.name} click={() => {this.handleClick(brand.name,index)}} close={brand.close} complete={brand.complete}/>
+					    })
+                    }
+				    </div>
+                )
+            }
+        }
+        class Card extends React.Component {
+            constructor(props) {
+		        super(props)
+                this.state = {
+                    movimento: 0
+                }
+            }
+
+	        clickCarta(brand){
+                this.props.click(brand)
+            }
+
+            checkPoint(){
+                this.state.movimento +=1
+            }
+	        render(){
+                const voltear = {
+                    transform: "rotateY(-180deg)"
+                }
+	            return(
+                    <div 
+                        className={"card" + (!this.props.close ? ' opened' : '') + (this.props.complete ? ' matched' : '')} 
+                        onClick={() => this.clickCarta(this.props.brand)}>
+		                <div>
+			                <img className='imagenStyle' src={images[8]}/>
+		                </div>
+                        <div style={voltear}>
+                            <img className='imagenStyle' src={images[this.props.brand]}/>
+                        </div>
+		            </div>
+	            )
+            }
+        }
+        ReactDOM.render(<Game/>, document.getElementById('index'))
+        </script>
+      </body>
+</html>
