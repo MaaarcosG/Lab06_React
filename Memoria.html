@@ -47,7 +47,7 @@
                     //damos tiempo para que se vean las imagenes
                     setTimeout(() => {
                         this.check()
-                    }, 750);
+                    }, 1000);
                 }else{
                     //lista de memoria
                     let cartaMemoria = {name, index}
@@ -144,7 +144,7 @@
                 }
 
                 return(
-                    <div className='pg'>{
+                    <div className='tablero'>{
                         this.state.final.map((brand, index) => {
                             return <Card brand={brand.name} click={() => {this.handleClick(brand.name,index)}} close={brand.close} complete={brand.complete}/>
 					    })
@@ -174,8 +174,12 @@
                 }
 	            return(
                     <div 
-                        className={"card" + (!this.props.close ? ' opened' : '') + (this.props.complete ? ' matched' : '')} 
-                        onClick={() => this.clickCarta(this.props.brand)}>
+                        className={
+                            "card" + (!this.props.close ? ' abierta' : '') + (this.props.complete ? ' iguales' : '')
+                        } 
+                        onClick={
+                            () => this.clickCarta(this.props.brand)
+                        }>
 		                <div>
 			                <img className='imagenStyle' src={images[8]}/>
 		                </div>
@@ -186,7 +190,9 @@
 	            )
             }
         }
-        ReactDOM.render(<Game/>, document.getElementById('index'))
+        ReactDOM.render(
+            <Game/>, document.getElementById('index')
+        )
         </script>
       </body>
 </html>

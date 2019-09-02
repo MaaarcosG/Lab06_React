@@ -17,8 +17,8 @@ body {
   position: relative;
 }
 
-.pg {
-  display: inline-grid;
+.tablero{
+  display: grid;
   grid-template-columns: auto auto auto auto;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   position: absolute;
@@ -28,7 +28,8 @@ body {
 .imagenStyle{
   width: 175px;
   height: auto;
-  border: 5px solid blue
+  border: 5px solid blue; 
+  color: blue;
 }
 
 div {
@@ -38,10 +39,10 @@ div {
   left: -10px;
 }
 
-div.card.opened {
+div.card.abierta {
   transform: rotateY(-180deg);
 }
-div.card.matched {
+div.card.iguales {
   transform: rotateY(180deg);
 }
 
