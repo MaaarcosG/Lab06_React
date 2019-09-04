@@ -83,6 +83,7 @@
                     finalCartaPar[this.state.cartaAbierta[0].index].complete = true
 				    finalCartaPar[this.state.cartaAbierta[1].index].complete = true
                 } else{
+                    //Verifica si se cierra el indice
                     finalCartaPar[this.state.cartaAbierta[0].index].close = true
 			        finalCartaPar[this.state.cartaAbierta[1].index].close = true
                 }
@@ -105,10 +106,24 @@
 		        })
             }
 
+             //funcion para hacer random en las listas, retorna la lista
+             randomize(array){
+                let indexLista = array.length, valorPrincipal, randomLista;
+		        while (0 !== indexLista) {
+                    randomLista = Math.floor(Math.random() * indexLista);
+                    //Contador de la lista
+                    indexLista -= 1;
+                    valorPrincipal = array[indexLista];
+                    array[indexLista] = array[randomLista];
+                    array[randomLista] = valorPrincipal;
+                }
+                return array
+            }
+
             setup(){
                 //limpiamos el array
 			    let final = [];
-			    // llenamos la lista
+			    // llenamos la lista concatenando el index
                 this.state.cartaDuplicada = this.state.memoria.concat(this.state.memoria)
                 // mandamos a hacer el metodo de random
 			    this.state.memoriaRandom = this.randomize(this.state.cartaDuplicada)
@@ -122,19 +137,6 @@
 			    })
 		        this.state.final = final
             }
-            
-            //funcion para hacer random en las listas
-            randomize(array){
-                let currentIndex = array.length, temporaryValue, randomIndex;
-		        while (0 !== currentIndex) {
-                    randomIndex = Math.floor(Math.random() * currentIndex);
-                    currentIndex -= 1;
-                    temporaryValue = array[currentIndex];
-                    array[currentIndex] = array[randomIndex];
-                    array[randomIndex] = temporaryValue;
-                }
-                return array
-            }
 
             //renderizamos la aplicacion
             render(){
@@ -146,8 +148,12 @@
 
                 return(
                     <div className='tablero'>{
-                        this.state.final.map((brand, index) => {
-                            return <Card brand={brand.name} click={() => {this.handleClick(brand.name,index)}} close={brand.close} complete={brand.complete}/>
+                        this.state.final.map((memorieList, index) => {
+                            return <Card 
+                                memorieList={memorieList.name} 
+                                click={() => {this.handleClick(memorieList.name,index)}} 
+                                close={memorieList.close} 
+                                complete={memorieList.complete}/>
 					    })
                     }
 				    </div>
@@ -162,8 +168,8 @@
                 }
             }
 
-	        clickCarta(brand){
-                this.props.click(brand)
+	        clickCarta(memorieList){
+                this.props.click(memorieList)
             }
 
             checkPoint(){
@@ -175,17 +181,13 @@
                 }
 	            return(
                     <div 
-                        className={
-                            "card" + (!this.props.close ? ' abierta' : '') + (this.props.complete ? ' iguales' : '')
-                        } 
-                        onClick={
-                            () => this.clickCarta(this.props.brand)
-                        }>
+                        className={"card" + (!this.props.close ? ' abierta' : '') + (this.props.complete ? ' iguales' : '')} 
+                        onClick={() => this.clickCarta(this.props.memorieList)}>
 		                <div>
 			                <img className='imagenStyle' src={images[8]}/>
 		                </div>
                         <div style={voltear}>
-                            <img className='imagenStyle' src={images[this.props.brand]}/>
+                            <img className='imagenStyle' src={images[this.props.memorieList]}/>
                         </div>
 		            </div>
 	            )
